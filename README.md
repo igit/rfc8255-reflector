@@ -7,7 +7,7 @@ Aims of the reflector :
 
 ![Reflector synoptic](synoptic-rfc8255-reflector--draw.io.png)
 
-# Howto install
+# How to install
 One can use the rfc8255-reflector.pl on a Unix server with MTA able to pipe incoming message to a script.
 
 Here is an example of installation on a Linux (Debian) server with Postfix :
