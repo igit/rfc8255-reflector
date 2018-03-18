@@ -36,4 +36,4 @@ The field To: is used to drive the reflector like this :
 * **+tl_** *es* : **tl_** = to/destination language ; *es* = spanish
 * **+tl_** *de* : **tl_** = to/destination language ; *de* = deuch
 
-Then, the reflector will build a [RFC8255](https://trac.tools.ietf.org/html/rfc8255) mail and reply to you.
+Then, the reflector build a [RFC8255](https://trac.tools.ietf.org/html/rfc8255) mail and reply to you.
