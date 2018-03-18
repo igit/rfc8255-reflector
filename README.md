@@ -26,7 +26,7 @@ $ chown -R reflector:`id -g reflector` .forward bin
 Simply send a mail to the "reflector" user by specifing the source language and the destination language(s) requested for translation and for building a [RFC8255](https://trac.tools.ietf.org/html/rfc8255) mail :
 
 ```
-$ echo "Hello world !" < body.txt
+$ echo "Hello world !" > body.txt
 $ mutt -s "First test" reflector+sl_en+tl_fr+tl_es+tl_de@example.com < body.txt
 ```
 
