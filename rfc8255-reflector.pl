@@ -154,26 +154,14 @@ foreach my $tl (@{$tls}) {
 
 ##### last part is "The Language-Independent Message Part"
 my $ascii_art = <<'END_ART';
-             /////|
-            ///// |
-           /////  |
-          |~~~| M |
-          |===| U |
-          |   | L |
-          | R | T |
-          | F | I |
-          | C | L |
-          | 8 | I |
-          | 2 | N |
-          | 5 | G |
-          | 5 | U |
-          |   | A |
-          |   | L |
-          |   |   |
-          |   |  /
-          |   | /
-          |===|/
-          '---'
+        __..._   _...__
+    _..-"      `Y`      "-._
+    \           | Multi-    /
+    \\  RFC8255 | lingual  //
+    \\\         | E-mail  ///
+     \\\ _..---.|.---.._ ///
+      \\`_..---.Y.---.._`//
+       '`               `'
 
 END_ART
 
