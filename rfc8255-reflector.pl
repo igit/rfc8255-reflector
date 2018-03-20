@@ -27,7 +27,7 @@ use JSON;
 my $DEBUG    = 1;
 my $LOG_FILE = "/tmp/rfc8255-reflector.log";
 my $MIME_Parser_tempdir = "/tmp";
-
+my $SEND_RESPOND_METHOD = "sendmail"; # sendmail | smtp
 
 
 ###############################################################################
@@ -195,7 +195,11 @@ logme($top->stringify);
 
 ##### send translated mail to original sender
 logme("\n\n>> Sending translated mail to ".$top->head->get('To'));
-$top->smtpsend();
+if($SEND_RESPOND_METHOD eq "smtp") {
+    $top->smtpsend();
+} else {
+    $top->send();
+}
 
 
 ###### clean MIME::Parser files
