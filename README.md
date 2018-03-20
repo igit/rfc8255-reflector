@@ -37,8 +37,8 @@ $ mutt -s "First test" reflector+sl_en+tl_fr+tl_es+tl_de@example.com < body.txt
 
 The field To: is used to drive the reflector like this :
 * **+sl_** *en* : **sl_** = source language ; *en* = english
-* **+tl_** *fr* : **tl_** = to/destination language ; *fr* = french
-* **+tl_** *es* : **tl_** = to/destination language ; *es* = spanish
-* **+tl_** *de* : **tl_** = to/destination language ; *de* = deuch
+* **+tl_** *fr* : **tl_** = target language ; *fr* = french
+* **+tl_** *es* : **tl_** = target language ; *es* = spanish
+* **+tl_** *de* : **tl_** = target language ; *de* = german
 
 Then, the reflector build a [RFC8255](https://trac.tools.ietf.org/html/rfc8255) mail and reply to you.
