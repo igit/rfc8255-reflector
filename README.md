@@ -3,6 +3,7 @@
 **Quick links :**
 * [How to install](#how-to-install)
 * [How to use](#how-to-use)
+* [Online reflector](#online-reflector)
 
 **Aims of the reflector :**
 * receive text/plain mail with a source language
@@ -42,3 +43,17 @@ The field To: is used to drive the reflector like this :
 * **+tl_** *de* : **tl_** = target language ; *de* = german
 
 Then, the reflector build a [RFC8255](https://trac.tools.ietf.org/html/rfc8255) mail and reply to you.
+
+# Online reflector
+An instance of the reflector is available for testing at this e-mail address : 
+
+```
+reflector[… +options …] AT rfc8255 DOT as-home DOT fr
+```
+Be aware that :
+* the service is proposed *as it is*, no guarantee, best efforts
+* the e-mail server hosting the service implements stricts anti-spam rules, you must send your e-mail from client/server well configured
+* if abuses are detected, the service will be disabled ... and maybe remove
+
+*Thank you for respecting that !*
+*-- the hoster*
