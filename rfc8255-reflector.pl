@@ -46,6 +46,15 @@ logme(">> Original mail :\n");
 logme($in->stringify);
 
 
+##### Skip bounced mail
+if($in->head->get('From') =~ /(mailer-daemon|postmaster|^$|^<>$)/i) {
+    my $from = $in->head->get('From');
+    chomp $from;
+    logme("\n\n>> Skipping mail >> From: ".$from."\n");
+    exit(0);
+}
+
+
 ##### extract languages from To: field
 my $sl  = "en";
 my $tls = [];
@@ -79,7 +88,7 @@ if(($in->parts == 0) && ($in->head->get('Content-Type') =~ /text\/plain/)) {
     for(my $i=0 ; $i<$in->parts ; $i++) {
 	my $part = $in->parts($i);
 	if($part->head->get('Content-Type') =~ /text\/plain/) {
-	    $BODY = decode_body($in->head->get('Content-Type'), $in->body);
+	    $BODY = decode_body($part->head->get('Content-Type'), $part->body);
 	    $CONTENT_TYPE = $part->head->get('Content-Type');
 	    last;
 	}
