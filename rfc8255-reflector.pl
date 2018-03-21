@@ -43,14 +43,16 @@ my $parser = new MIME::Parser; $parser->output_under($MIME_Parser_tempdir);
 my $in = $parser->parse(\*STDIN);
 
 logme(">> Original mail :\n");
+logme("===============================================================================\n");
 logme($in->stringify);
+logme("===============================================================================\n\n");
 
 
 ##### Skip bounced mail
 if($in->head->get('From') =~ /(mailer-daemon|postmaster|^$|^<>$)/i) {
     my $from = $in->head->get('From');
     chomp $from;
-    logme("\n\n>> Skipping mail >> From: ".$from."\n");
+    logme(">> Skipping mail >> From: ".$from."\n");
     exit(0);
 }
 
@@ -74,27 +76,38 @@ if($in->head->get('To') =~ /(?:^|<)[^\+]+(\+.+)*\@.+(?:>|$)/) {
 if(scalar(@{$tls}) == 0) {
     $tls = [ "fr" ];
 }
-logme("\n\n>> Extracted languages from To: => \$sl=$sl \$tls=".(join ",", @{$tls})."\n");
+logme(">> Extracted languages from To: => \$sl=$sl \$tls=".(join ",", @{$tls})."\n\n");
 
+logme(">> Crawling original mail part(s) ...\n");
+(my $BODY, my $CONTENT_TYPE) = @{crawl_part($in, "0")};
+logme("\n");
 
-##### find one text/plain part
-my $BODY = undef;
-my $CONTENT_TYPE = undef;
-if(($in->parts == 0) && ($in->head->get('Content-Type') =~ /text\/plain/)) {
-    $BODY = decode_body($in->head->get('Content-Type'), $in->body);
-    $CONTENT_TYPE = $in->head->get('Content-Type');
-} else {
+sub crawl_part {
+    my $part         = shift;
+    my $part_path    = shift;
+    my $body         = undef;
+    my $content_type = undef;
 
-    for(my $i=0 ; $i<$in->parts ; $i++) {
-	my $part = $in->parts($i);
-	if($part->head->get('Content-Type') =~ /text\/plain/) {
-	    $BODY = decode_body($part->head->get('Content-Type'), $part->body);
-	    $CONTENT_TYPE = $part->head->get('Content-Type');
-	    last;
+    if(($part->parts == 0) && ($part->head->get('Content-Type') =~ /text\/plain/)) {
+
+	logme(">>   text/plain part found, stop crawling\n");
+	$body = decode_body($part->head->get('Content-Type'), $part->body);
+	$content_type = $part->head->get('Content-Type');
+	return [ $body, $content_type ];
+
+    } else {
+
+	for(my $i=0 ; $i<$part->parts ; $i++) {
+	    $part_path="$part_path/$i";
+	    logme(">>  crawling part $part_path\n");
+	    my $res = crawl_part($part->parts($i),$part_path);
+	    return $res if(defined $res);
 	}
     }
 
-}
+    return undef;
+} ## sub crawl_part
+
 
 if(not defined $BODY) {
     $BODY = [ "No text plain found in original email.\n",
@@ -106,7 +119,7 @@ if(not defined $BODY) {
 ##### build top part and "preface"
 my $top = MIME::Entity->build(
     Type    => 'multipart/multilingual',
-    From    => $in->head->get('From'),
+    From    => $in->head->get('To'),
     To      => $in->head->get('From'),
     Subject => $in->head->get('Subject'),
     );
@@ -140,11 +153,13 @@ foreach my $tl (@{$tls}) {
 
     if(defined $translated_subject && defined $translated_body) {
 
-	logme("\n\n>> Translated subject from $sl to $tl :\n");
+	logme(">> Translated subject from $sl to $tl :\n");
 	logme(encode_utf8 $translated_subject);
+	logme("\n\n");
 
-	logme("\n\n>> Translated body from $sl to $tl :\n");
+	logme(">> Translated body from $sl to $tl :\n");
 	logme(encode_utf8 $translated_body);
+	logme("\n\n");
 
 	## translated
 	$top->attach(
@@ -186,12 +201,14 @@ $top->attach(
 
 
 ##### translated email is completed
-logme("\n\n>> Translated mail :\n");
+logme(">> Translated mail :\n");
+logme("===============================================================================\n");
 logme($top->stringify);
+logme("===============================================================================\n\n");
 
 
 ##### send translated mail to original sender
-logme("\n\n>> Sending translated mail to ".$top->head->get('To'));
+logme(">> Sending translated mail to ".$top->head->get('To'));
 if($SEND_RESPOND_METHOD eq "smtp") {
     $top->smtpsend();
 } else {
@@ -225,7 +242,6 @@ sub translate {
     my $response = $ua->get($uri);
 
     if($response->is_success) {
-	logme(">> Got response !\n");
 	my @lines = ();
 	foreach my $r (@{(decode_json $response->decoded_content)->[0]}) {
 	    push @lines, $r->[0];
@@ -245,8 +261,8 @@ sub decode_body {
     my $body = shift;
     my $charset = "utf-8";
 
-    if($content_type=~/charset=(.+)(^| |;|\n)/) {
-	$charset = $1;
+    if($content_type=~/charset=[\"\']*([A-Za-z0-9\-]+)[\"\']*(^| |;|\n)/) {
+	$charset = lc($1);
     }
 
     my $ret = [];
