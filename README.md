@@ -24,6 +24,9 @@ $ cd /home/reflector
 $ mkdir bin
 $ curl https://raw.githubusercontent.com/igit/rfc8255-reflector/master/rfc8255-reflector.pl -o bin/rfc8255-reflector.pl
 $ chmod 755 bin/rfc8255-reflector.pl
+$ perl -c bin/rfc8255-reflector.pl
+  rfc8255-reflector.pl syntax OK
+  ## else fix perl modules that are missing
 $ echo "|/home/reflector/bin/rfc8255-reflector.pl" > .forward
 $ chown -R reflector:`id -g reflector` .forward bin
 ```
