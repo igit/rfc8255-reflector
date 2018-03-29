@@ -91,8 +91,8 @@ sub crawl_part {
     if(($part->parts == 0) && ($part->head->get('Content-Type') =~ /text\/plain/)) {
 
 	logme(">>   text/plain part found, stop crawling\n");
-	$body = decode_body($part->head->get('Content-Type'), $part->body);
-	$content_type = $part->head->get('Content-Type');
+	my @temp = $part->bodyhandle->as_lines;
+	$body = decode_body($part->head->get('Content-Type'), \@temp);
 	return [ $body, $content_type ];
 
     } else {
