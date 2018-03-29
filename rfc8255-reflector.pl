@@ -24,8 +24,10 @@ use JSON;
 ##### CONFIG
 ###############################################################################
 
-my $DEBUG    = 1;
-my $LOG_FILE = "/tmp/rfc8255-reflector.log";
+my $DEBUG               = 1;
+
+my $BODY_MAX_SIZE       = 256; # characters
+my $LOG_FILE            = "/tmp/rfc8255-reflector.log";
 my $MIME_Parser_tempdir = "/tmp";
 my $SEND_RESPOND_METHOD = "sendmail"; # sendmail | smtp
 
@@ -93,6 +95,16 @@ sub crawl_part {
 	logme(">>   text/plain part found, stop crawling\n");
 	my @temp = $part->bodyhandle->as_lines;
 	$body = decode_body($part->head->get('Content-Type'), \@temp);
+
+	my $size = length(join "", @{$body});
+	if($size > $BODY_MAX_SIZE) {
+	    logme(">>   text/plain part was too long ($size characters)\n");
+	    $body = [ "Text plain found in original email, but too long ($size characters) for the reflector.\n",
+		      "Please retry.\n"];
+	    $content_type = "text/plain; charset=utf-8\n";
+	} else {
+	    $content_type = $part->head->get('Content-Type');
+	}
 	return [ $body, $content_type ];
 
     } else {
